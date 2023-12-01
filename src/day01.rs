@@ -24,8 +24,6 @@ fn part1(input: &str) -> String {
 }
 
 fn part2(input: &str) -> String {
-    let mut sum = 0;
-
     let map: HashMap<&str, u32> = HashMap::from_iter([
         ("one", 1),
         ("two", 2),
@@ -38,26 +36,23 @@ fn part2(input: &str) -> String {
         ("nine", 9),
     ]);
 
+    let mut sum = 0;
     for line in input.lines() {
-        let mut first = None;
-        let mut second = None;
+        let mut nums = vec![];
 
         let mut line = line.to_string();
 
         loop {
             for (key, &value) in &map {
                 if line.starts_with(key) {
-                    first.get_or_insert(value);
-                    second = Some(value);
+                    nums.push(value);
                 }
             }
 
             if let Some(c) = line.chars().next() {
                 if c.is_ascii_digit() {
                     let digit = c.to_digit(10).unwrap();
-
-                    first.get_or_insert(digit);
-                    second = Some(digit);
+                    nums.push(digit);
                 }
             } else {
                 break;
@@ -66,7 +61,7 @@ fn part2(input: &str) -> String {
             line = line[1..].to_string();
         }
 
-        sum += first.unwrap() * 10 + second.unwrap();
+        sum += nums.first().unwrap() * 10 + nums.last().unwrap();
     }
 
     sum.to_string()
