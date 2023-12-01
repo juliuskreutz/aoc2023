@@ -13,8 +13,7 @@ fn part1(input: &str) -> String {
     for line in input.lines() {
         let nums = line
             .chars()
-            .filter(|x| x.is_ascii_digit())
-            .map(|x| x.to_digit(10).unwrap())
+            .flat_map(|x| x.to_digit(10))
             .collect::<Vec<_>>();
 
         sum += nums.first().unwrap() * 10 + nums.last().unwrap();
@@ -50,8 +49,7 @@ fn part2(input: &str) -> String {
             }
 
             if let Some(c) = line.chars().next() {
-                if c.is_ascii_digit() {
-                    let digit = c.to_digit(10).unwrap();
+                if let Some(digit) = c.to_digit(10) {
                     nums.push(digit);
                 }
             } else {
