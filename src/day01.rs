@@ -1,7 +1,7 @@
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 
 pub fn solve() {
-    let input = fs::read_to_string("input/day01.txt").unwrap();
+    let input = std::fs::read_to_string("input/day01.txt").unwrap();
 
     println!("Day01 Part1: {}", part1(&input));
     println!("Day01 Part2: {}", part2(&input));
