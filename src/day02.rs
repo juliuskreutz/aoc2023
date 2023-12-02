@@ -2,7 +2,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{digit1, newline, space1},
-    combinator::map_res,
+    combinator::{map_res, value},
     multi::separated_list1,
     IResult,
 };
@@ -20,9 +20,14 @@ struct Game {
 }
 
 struct Set {
-    red: i32,
-    green: i32,
-    blue: i32,
+    colors: Vec<Color>,
+}
+
+#[derive(Clone, Copy)]
+enum Color {
+    Red(usize),
+    Green(usize),
+    Blue(usize),
 }
 
 fn parse(input: &str) -> IResult<&str, Vec<Game>> {
@@ -40,28 +45,18 @@ fn parse_game(input: &str) -> IResult<&str, Game> {
 
 fn parse_set(input: &str) -> IResult<&str, Set> {
     let (input, colors) = separated_list1(tag(", "), parse_color)(input)?;
-
-    let mut red = 0;
-    let mut green = 0;
-    let mut blue = 0;
-
-    for (color, amount) in colors {
-        match color {
-            "red" => red = amount,
-            "green" => green = amount,
-            "blue" => blue = amount,
-            _ => unreachable!(),
-        }
-    }
-
-    Ok((input, Set { red, green, blue }))
+    Ok((input, Set { colors }))
 }
 
-fn parse_color(input: &str) -> IResult<&str, (&str, i32)> {
-    let (input, amount) = map_res(digit1, str::parse::<i32>)(input)?;
+fn parse_color(input: &str) -> IResult<&str, Color> {
+    let (input, amount) = map_res(digit1, str::parse::<usize>)(input)?;
     let (input, _) = space1(input)?;
-    let (input, color) = alt((tag("red"), tag("green"), tag("blue")))(input)?;
-    Ok((input, (color, amount)))
+    let (input, color) = alt((
+        value(Color::Red(amount), tag("red")),
+        value(Color::Green(amount), tag("green")),
+        value(Color::Blue(amount), tag("blue")),
+    ))(input)?;
+    Ok((input, color))
 }
 
 fn part1(input: &str) -> String {
@@ -70,8 +65,24 @@ fn part1(input: &str) -> String {
     let mut count = 0;
     'outer: for game in games {
         for set in game.sets {
-            if set.red > 12 || set.green > 13 || set.blue > 14 {
-                continue 'outer;
+            for color in set.colors {
+                match color {
+                    Color::Red(amount) => {
+                        if amount > 12 {
+                            continue 'outer;
+                        }
+                    }
+                    Color::Green(amount) => {
+                        if amount > 13 {
+                            continue 'outer;
+                        }
+                    }
+                    Color::Blue(amount) => {
+                        if amount > 14 {
+                            continue 'outer;
+                        }
+                    }
+                }
             }
         }
 
@@ -86,14 +97,24 @@ fn part2(input: &str) -> String {
 
     let mut count = 0;
     for game in games {
-        let mut red = i32::MIN;
-        let mut green = i32::MIN;
-        let mut blue = i32::MIN;
+        let mut red = usize::MIN;
+        let mut green = usize::MIN;
+        let mut blue = usize::MIN;
 
         for set in game.sets {
-            red = red.max(set.red);
-            green = green.max(set.green);
-            blue = blue.max(set.blue);
+            for color in set.colors {
+                match color {
+                    Color::Red(amount) => {
+                        red = red.max(amount);
+                    }
+                    Color::Green(amount) => {
+                        green = green.max(amount);
+                    }
+                    Color::Blue(amount) => {
+                        blue = blue.max(amount);
+                    }
+                }
+            }
         }
 
         count += red * green * blue;
