@@ -9,7 +9,6 @@ pub fn solve() {
 
 fn part1(input: &str) -> String {
     let mut sum = 0;
-
     for line in input.lines() {
         for i in 0..line.len() {
             if let Ok(num) = line[i..i + 1].parse::<u32>() {
@@ -43,7 +42,6 @@ fn part2(input: &str) -> String {
     ]);
 
     let mut sum = 0;
-
     for line in input.lines() {
         'outer: for i in 0..line.len() {
             if let Ok(num) = line[i..i + 1].parse::<u32>() {

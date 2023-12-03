@@ -63,7 +63,6 @@ fn part1(input: &str) -> String {
     let (_, games) = parse(input).unwrap();
 
     let mut count = 0;
-
     'outer: for game in games {
         for color in game.sets.iter().flat_map(|set| &set.colors).copied() {
             match color {
@@ -95,7 +94,6 @@ fn part2(input: &str) -> String {
     let (_, games) = parse(input).unwrap();
 
     let mut count = 0;
-
     for game in games {
         let mut red = usize::MIN;
         let mut green = usize::MIN;
