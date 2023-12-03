@@ -11,12 +11,19 @@ fn part1(input: &str) -> String {
     let mut sum = 0;
 
     for line in input.lines() {
-        let nums = line
-            .chars()
-            .flat_map(|x| x.to_digit(10))
-            .collect::<Vec<_>>();
+        for i in 0..line.len() {
+            if let Ok(num) = line[i..i + 1].parse::<u32>() {
+                sum += 10 * num;
+                break;
+            }
+        }
 
-        sum += nums.first().unwrap() * 10 + nums.last().unwrap();
+        for i in (0..line.len()).rev() {
+            if let Ok(num) = line[i..i + 1].parse::<u32>() {
+                sum += num;
+                break;
+            }
+        }
     }
 
     sum.to_string()
@@ -36,30 +43,35 @@ fn part2(input: &str) -> String {
     ]);
 
     let mut sum = 0;
+
     for line in input.lines() {
-        let mut nums = vec![];
-
-        let mut line = line.to_string();
-
-        loop {
-            for (key, &value) in &map {
-                if line.starts_with(key) {
-                    nums.push(value);
-                }
-            }
-
-            if let Some(c) = line.chars().next() {
-                if let Some(digit) = c.to_digit(10) {
-                    nums.push(digit);
-                }
-            } else {
+        'outer: for i in 0..line.len() {
+            if let Ok(num) = line[i..i + 1].parse::<u32>() {
+                sum += 10 * num;
                 break;
             }
 
-            line = line[1..].to_string();
+            for (key, &num) in &map {
+                if line[i..].starts_with(key) {
+                    sum += 10 * num;
+                    break 'outer;
+                }
+            }
         }
 
-        sum += nums.first().unwrap() * 10 + nums.last().unwrap();
+        'outer: for i in (0..line.len()).rev() {
+            if let Ok(num) = line[i..i + 1].parse::<u32>() {
+                sum += num;
+                break;
+            }
+
+            for (key, &num) in &map {
+                if line[i..].starts_with(key) {
+                    sum += num;
+                    break 'outer;
+                }
+            }
+        }
     }
 
     sum.to_string()
