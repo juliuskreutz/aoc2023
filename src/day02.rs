@@ -16,10 +16,6 @@ pub fn solve() {
 
 struct Game {
     id: i32,
-    sets: Vec<Set>,
-}
-
-struct Set {
     colors: Vec<Color>,
 }
 
@@ -39,13 +35,8 @@ fn parse_game(input: &str) -> IResult<&str, Game> {
     let (input, _) = tag("Game ")(input)?;
     let (input, id) = map_res(digit1, str::parse::<i32>)(input)?;
     let (input, _) = tag(": ")(input)?;
-    let (input, sets) = separated_list1(tag("; "), parse_set)(input)?;
-    Ok((input, Game { id, sets }))
-}
-
-fn parse_set(input: &str) -> IResult<&str, Set> {
-    let (input, colors) = separated_list1(tag(", "), parse_color)(input)?;
-    Ok((input, Set { colors }))
+    let (input, colors) = separated_list1(alt((tag(", "), tag("; "))), parse_color)(input)?;
+    Ok((input, Game { id, colors }))
 }
 
 fn parse_color(input: &str) -> IResult<&str, Color> {
@@ -64,7 +55,7 @@ fn part1(input: &str) -> String {
 
     let mut count = 0;
     'outer: for game in games {
-        for color in game.sets.iter().flat_map(|set| &set.colors).copied() {
+        for color in game.colors {
             match color {
                 Color::Red(amount) => {
                     if amount > 12 {
@@ -99,7 +90,7 @@ fn part2(input: &str) -> String {
         let mut green = usize::MIN;
         let mut blue = usize::MIN;
 
-        for color in game.sets.iter().flat_map(|set| &set.colors).copied() {
+        for color in game.colors {
             match color {
                 Color::Red(amount) => {
                     red = red.max(amount);
