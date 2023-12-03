@@ -64,23 +64,21 @@ fn part1(input: &str) -> String {
 
     let mut count = 0;
     'outer: for game in games {
-        for set in game.sets {
-            for color in set.colors {
-                match color {
-                    Color::Red(amount) => {
-                        if amount > 12 {
-                            continue 'outer;
-                        }
+        for color in game.sets.iter().flat_map(|set| &set.colors).copied() {
+            match color {
+                Color::Red(amount) => {
+                    if amount > 12 {
+                        continue 'outer;
                     }
-                    Color::Green(amount) => {
-                        if amount > 13 {
-                            continue 'outer;
-                        }
+                }
+                Color::Green(amount) => {
+                    if amount > 13 {
+                        continue 'outer;
                     }
-                    Color::Blue(amount) => {
-                        if amount > 14 {
-                            continue 'outer;
-                        }
+                }
+                Color::Blue(amount) => {
+                    if amount > 14 {
+                        continue 'outer;
                     }
                 }
             }
@@ -101,18 +99,16 @@ fn part2(input: &str) -> String {
         let mut green = usize::MIN;
         let mut blue = usize::MIN;
 
-        for set in game.sets {
-            for color in set.colors {
-                match color {
-                    Color::Red(amount) => {
-                        red = red.max(amount);
-                    }
-                    Color::Green(amount) => {
-                        green = green.max(amount);
-                    }
-                    Color::Blue(amount) => {
-                        blue = blue.max(amount);
-                    }
+        for color in game.sets.iter().flat_map(|set| &set.colors).copied() {
+            match color {
+                Color::Red(amount) => {
+                    red = red.max(amount);
+                }
+                Color::Green(amount) => {
+                    green = green.max(amount);
+                }
+                Color::Blue(amount) => {
+                    blue = blue.max(amount);
                 }
             }
         }
