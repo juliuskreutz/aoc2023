@@ -43,17 +43,15 @@ fn part1(input: &str) -> String {
 
     let mut sum = 0;
     for card in cards {
-        let mut product = 0;
-        for having in card.having {
-            if card.winning.contains(&having) {
-                if product == 0 {
-                    product = 1;
-                } else {
-                    product <<= 1;
-                }
-            }
+        let count = card
+            .winning
+            .iter()
+            .filter(|x| card.having.contains(x))
+            .count();
+
+        if count > 0 {
+            sum += 1 << (count - 1);
         }
-        sum += product;
     }
 
     sum.to_string()
@@ -64,12 +62,11 @@ fn part2(input: &str) -> String {
 
     let mut card_counts = vec![1; cards.len()];
     for (i, card) in cards.into_iter().enumerate() {
-        let mut count = 0;
-        for having in card.having {
-            if card.winning.contains(&having) {
-                count += 1;
-            }
-        }
+        let count = card
+            .winning
+            .iter()
+            .filter(|x| card.having.contains(x))
+            .count();
 
         for offset in 0..count {
             card_counts[i + 1 + offset] += card_counts[i];
