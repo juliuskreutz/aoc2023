@@ -15,7 +15,6 @@ pub fn solve() {
 
 #[derive(Clone)]
 struct Card {
-    id: usize,
     winning: Vec<i32>,
     having: Vec<i32>,
 }
@@ -28,7 +27,7 @@ fn parse(input: &str) -> IResult<&str, Vec<Card>> {
 fn parse_card(input: &str) -> IResult<&str, Card> {
     let (input, _) = tag("Card")(input)?;
     let (input, _) = space1(input)?;
-    let (input, id) = map_res(digit1, str::parse::<usize>)(input)?;
+    let (input, _) = digit1(input)?;
     let (input, _) = char(':')(input)?;
     let (input, _) = space1(input)?;
     let (input, winning) = separated_list1(space1, map_res(digit1, str::parse::<i32>))(input)?;
@@ -36,14 +35,7 @@ fn parse_card(input: &str) -> IResult<&str, Card> {
     let (input, _) = char('|')(input)?;
     let (input, _) = space1(input)?;
     let (input, having) = separated_list1(space1, map_res(digit1, str::parse::<i32>))(input)?;
-    Ok((
-        input,
-        Card {
-            id,
-            winning,
-            having,
-        },
-    ))
+    Ok((input, Card { winning, having }))
 }
 
 fn part1(input: &str) -> String {
@@ -70,10 +62,8 @@ fn part1(input: &str) -> String {
 fn part2(input: &str) -> String {
     let (_, cards) = parse(input).unwrap();
 
-    let mut card_stack = cards.clone();
-
-    let mut sum = 0;
-    while let Some(card) = card_stack.pop() {
+    let mut card_counts = vec![1; cards.len()];
+    for (i, card) in cards.into_iter().enumerate() {
         let mut count = 0;
         for having in card.having {
             if card.winning.contains(&having) {
@@ -81,12 +71,10 @@ fn part2(input: &str) -> String {
             }
         }
 
-        for i in 0..count {
-            card_stack.push(cards[card.id + i].clone());
+        for offset in 0..count {
+            card_counts[i + 1 + offset] += card_counts[i];
         }
-
-        sum += 1;
     }
 
-    sum.to_string()
+    card_counts.iter().sum::<usize>().to_string()
 }
