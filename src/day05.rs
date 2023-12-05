@@ -98,8 +98,7 @@ fn part2(input: &str) -> String {
     for almanac in &garden.almanacs {
         let mut mapped_seeds = Vec::new();
 
-        while let Some(seed) = seeds.pop() {
-            let mut mapped = false;
+        'outer: while let Some(seed) = seeds.pop() {
             for (destination, source) in almanac {
                 // Not in range
                 if seed.end <= source.start || source.end <= seed.start {
@@ -122,12 +121,10 @@ fn part2(input: &str) -> String {
                     seeds.push(source.end..seed.end);
                 }
 
-                mapped = true;
+                continue 'outer;
             }
 
-            if !mapped {
-                mapped_seeds.push(seed);
-            }
+            mapped_seeds.push(seed);
         }
 
         seeds = mapped_seeds;
