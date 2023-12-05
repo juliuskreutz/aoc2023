@@ -111,12 +111,12 @@ fn part2(input: &str) -> String {
                 mapped_seeds
                     .push(seed.start.max(source.start) + offset..seed.end.min(source.end) + offset);
 
-                // Left range
+                // Left outside range
                 if seed.start < source.start {
                     seeds.push(seed.start..source.start);
                 }
 
-                // Right range
+                // Right outside range
                 if source.end < seed.end {
                     seeds.push(source.end..seed.end);
                 }
