@@ -1,11 +1,11 @@
 use std::ops::Range;
 
 use nom::{
-    bytes::complete::{tag, take_until},
+    bytes::complete::{tag, take_till},
     character::complete::{digit1, newline, space1},
     combinator::map_res,
     multi::separated_list1,
-    sequence::{pair, terminated},
+    sequence::pair,
     IResult,
 };
 
@@ -26,7 +26,7 @@ struct Garden {
 fn parse(input: &str) -> IResult<&str, Garden> {
     let (input, seeds) = parse_seeds(input)?;
     let (input, _) = pair(newline, newline)(input)?;
-    let (input, almanacs) = separated_list1(pair(newline, newline), parse_almanacs)(input)?;
+    let (input, almanacs) = separated_list1(pair(newline, newline), parse_almanac)(input)?;
     Ok((input, Garden { seeds, almanacs }))
 }
 
@@ -37,13 +37,8 @@ fn parse_seeds(input: &str) -> IResult<&str, Vec<usize>> {
     Ok((input, seeds))
 }
 
-fn parse_almanacs(input: &str) -> IResult<&str, Almanac> {
-    let (input, almanacs) = parse_almanac(input)?;
-    Ok((input, almanacs))
-}
-
 fn parse_almanac(input: &str) -> IResult<&str, Almanac> {
-    let (input, _) = terminated(take_until("\n"), newline)(input)?;
+    let (input, _) = take_till(|c: char| c.is_ascii_digit())(input)?;
     let (input, almanac) = separated_list1(newline, parse_almanac_entry)(input)?;
     Ok((input, almanac))
 }
