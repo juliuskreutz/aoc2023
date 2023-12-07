@@ -55,7 +55,7 @@ fn parse_card(input: &str) -> IResult<&str, Card> {
     Ok((input, card))
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Card {
     Two,
     Three,
@@ -117,7 +117,7 @@ fn get_card_type(cards: &[Card], part2: bool) -> HandType {
     }
 }
 
-fn compare(x: &[Card], y: &[Card], order: &HashMap<Card, usize>, part2: bool) -> Ordering {
+fn compare(x: &[Card], y: &[Card], part2: bool) -> Ordering {
     let x_type = get_card_type(x, part2);
     let y_type = get_card_type(y, part2);
 
@@ -127,7 +127,14 @@ fn compare(x: &[Card], y: &[Card], order: &HashMap<Card, usize>, part2: bool) ->
 
     for (&c1, &c2) in x.iter().zip(y.iter()) {
         if c1 != c2 {
-            return order[&c1].cmp(&order[&c2]);
+            if part2 {
+                if c1 == Card::Jack {
+                    return Ordering::Less;
+                } else if c2 == Card::Jack {
+                    return Ordering::Greater;
+                }
+            }
+            return c1.cmp(&c2);
         }
     }
 
@@ -137,22 +144,7 @@ fn compare(x: &[Card], y: &[Card], order: &HashMap<Card, usize>, part2: bool) ->
 fn part1(input: &str) -> String {
     let (_, mut cards) = parse(input).unwrap();
 
-    let order = HashMap::from_iter([
-        (Card::Two, 0),
-        (Card::Three, 1),
-        (Card::Four, 2),
-        (Card::Five, 3),
-        (Card::Six, 4),
-        (Card::Seven, 5),
-        (Card::Eight, 6),
-        (Card::Nine, 7),
-        (Card::Ten, 8),
-        (Card::Jack, 9),
-        (Card::Queen, 10),
-        (Card::King, 11),
-        (Card::Ace, 12),
-    ]);
-    cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, &order, false));
+    cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, false));
 
     let mut sum = 0;
     for (i, hand) in cards.iter().enumerate() {
@@ -165,22 +157,7 @@ fn part1(input: &str) -> String {
 fn part2(input: &str) -> String {
     let (_, mut cards) = parse(input).unwrap();
 
-    let order = HashMap::from_iter([
-        (Card::Jack, 0),
-        (Card::Two, 1),
-        (Card::Three, 2),
-        (Card::Four, 3),
-        (Card::Five, 4),
-        (Card::Six, 5),
-        (Card::Seven, 6),
-        (Card::Eight, 7),
-        (Card::Nine, 8),
-        (Card::Ten, 9),
-        (Card::Queen, 10),
-        (Card::King, 11),
-        (Card::Ace, 12),
-    ]);
-    cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, &order, true));
+    cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, true));
 
     let mut sum = 0;
     for (i, hand) in cards.iter().enumerate() {
