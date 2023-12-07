@@ -24,6 +24,23 @@ struct Hand {
     bid: usize,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+enum Card {
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Jack,
+    Queen,
+    King,
+    Ace,
+}
+
 fn parse(input: &str) -> IResult<&str, Vec<Hand>> {
     let (input, cards) = separated_list1(newline, parse_hand)(input)?;
     Ok((input, cards))
@@ -53,23 +70,6 @@ fn parse_card(input: &str) -> IResult<&str, Card> {
         value(Card::Two, char('2')),
     ))(input)?;
     Ok((input, card))
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-enum Card {
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Ten,
-    Jack,
-    Queen,
-    King,
-    Ace,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
