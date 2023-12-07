@@ -109,7 +109,7 @@ fn get_card_type(cards: &[Card], part2: bool) -> HandType {
     match counts[..] {
         [5] => HandType::FiveOfAKind,
         [4, ..] => HandType::FourOfAKind,
-        [3, 2, ..] => HandType::FullHouse,
+        [3, 2] => HandType::FullHouse,
         [3, ..] => HandType::ThreeOfAKind,
         [2, 2, ..] => HandType::TwoPair,
         [2, ..] => HandType::OnePair,
