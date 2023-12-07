@@ -117,7 +117,7 @@ fn get_card_type(cards: &[Card], part2: bool) -> HandType {
     }
 }
 
-fn compare(x: &[Card], y: &[Card], order: &[Card], part2: bool) -> Ordering {
+fn compare(x: &[Card], y: &[Card], order: &HashMap<Card, usize>, part2: bool) -> Ordering {
     let x_type = get_card_type(x, part2);
     let y_type = get_card_type(y, part2);
 
@@ -127,11 +127,7 @@ fn compare(x: &[Card], y: &[Card], order: &[Card], part2: bool) -> Ordering {
 
     for (&c1, &c2) in x.iter().zip(y.iter()) {
         if c1 != c2 {
-            return order
-                .iter()
-                .position(|&c| c == c1)
-                .unwrap()
-                .cmp(&order.iter().position(|&c| c == c2).unwrap());
+            return order[&c1].cmp(&order[&c2]);
         }
     }
 
@@ -141,21 +137,21 @@ fn compare(x: &[Card], y: &[Card], order: &[Card], part2: bool) -> Ordering {
 fn part1(input: &str) -> String {
     let (_, mut cards) = parse(input).unwrap();
 
-    let order = [
-        Card::Two,
-        Card::Three,
-        Card::Four,
-        Card::Five,
-        Card::Six,
-        Card::Seven,
-        Card::Eight,
-        Card::Nine,
-        Card::Ten,
-        Card::Jack,
-        Card::Queen,
-        Card::King,
-        Card::Ace,
-    ];
+    let order = HashMap::from_iter([
+        (Card::Two, 0),
+        (Card::Three, 1),
+        (Card::Four, 2),
+        (Card::Five, 3),
+        (Card::Six, 4),
+        (Card::Seven, 5),
+        (Card::Eight, 6),
+        (Card::Nine, 7),
+        (Card::Ten, 8),
+        (Card::Jack, 9),
+        (Card::Queen, 10),
+        (Card::King, 11),
+        (Card::Ace, 12),
+    ]);
     cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, &order, false));
 
     let mut sum = 0;
@@ -169,21 +165,21 @@ fn part1(input: &str) -> String {
 fn part2(input: &str) -> String {
     let (_, mut cards) = parse(input).unwrap();
 
-    let order = [
-        Card::Jack,
-        Card::Two,
-        Card::Three,
-        Card::Four,
-        Card::Five,
-        Card::Six,
-        Card::Seven,
-        Card::Eight,
-        Card::Nine,
-        Card::Ten,
-        Card::Queen,
-        Card::King,
-        Card::Ace,
-    ];
+    let order = HashMap::from_iter([
+        (Card::Jack, 0),
+        (Card::Two, 1),
+        (Card::Three, 2),
+        (Card::Four, 3),
+        (Card::Five, 4),
+        (Card::Six, 5),
+        (Card::Seven, 6),
+        (Card::Eight, 7),
+        (Card::Nine, 8),
+        (Card::Ten, 9),
+        (Card::Queen, 10),
+        (Card::King, 11),
+        (Card::Ace, 12),
+    ]);
     cards.sort_unstable_by(|x, y| compare(&x.cards, &y.cards, &order, true));
 
     let mut sum = 0;
