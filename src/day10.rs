@@ -7,7 +7,7 @@ pub fn solve() {
     println!("Day10 Part2: {}", part2(&input));
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Direction {
     Up,
     Right,
@@ -15,7 +15,14 @@ enum Direction {
     Left,
 }
 
-fn get_pipe(grid: &[Vec<char>]) -> HashSet<(usize, usize)> {
+struct Pipe {
+    start_x: usize,
+    start_y: usize,
+    start: char,
+    pipe: HashSet<(usize, usize)>,
+}
+
+fn get_pipe(grid: &[Vec<char>]) -> Pipe {
     let (mut start_x, mut start_y) = (0, 0);
     'outer: for (y, row) in grid.iter().enumerate() {
         for (x, &c) in row.iter().enumerate() {
@@ -26,35 +33,44 @@ fn get_pipe(grid: &[Vec<char>]) -> HashSet<(usize, usize)> {
         }
     }
 
-    let mut direction = 'direction: {
+    let directions = {
+        let mut directions = Vec::new();
+
         if start_y != 0 {
-            match grid[start_y - 1][start_x] {
-                '|' | '7' | 'F' => break 'direction Direction::Up,
-                _ => {}
+            if let '|' | '7' | 'F' = grid[start_y - 1][start_x] {
+                directions.push(Direction::Up)
             }
         }
         if start_x != grid[start_y].len() - 1 {
-            match grid[start_y][start_x + 1] {
-                '-' | 'J' | '7' => break 'direction Direction::Right,
-                _ => {}
+            if let '-' | 'J' | '7' = grid[start_y][start_x + 1] {
+                directions.push(Direction::Right)
             }
         }
         if start_y != grid.len() - 1 {
-            match grid[start_y + 1][start_x] {
-                '|' | 'L' | 'J' => break 'direction Direction::Down,
-                _ => {}
+            if let '|' | 'L' | 'J' = grid[start_y + 1][start_x] {
+                directions.push(Direction::Down)
             }
         }
         if start_x != 0 {
-            match grid[start_y][start_x - 1] {
-                '-' | 'L' | 'F' => break 'direction Direction::Left,
-                _ => {}
+            if let '-' | 'L' | 'F' = grid[start_y][start_x - 1] {
+                directions.push(Direction::Left)
             }
         }
 
-        unreachable!()
+        directions
     };
 
+    let start = match directions[..] {
+        [Direction::Up, Direction::Down] => '|',
+        [Direction::Right, Direction::Left] => '-',
+        [Direction::Up, Direction::Right] => 'L',
+        [Direction::Up, Direction::Left] => 'J',
+        [Direction::Down, Direction::Left] => '7',
+        [Direction::Right, Direction::Down] => 'F',
+        _ => unreachable!(),
+    };
+
+    let mut direction = directions[0];
     let (mut current_x, mut current_y) = (start_x, start_y);
     let mut pipe = HashSet::new();
 
@@ -103,7 +119,12 @@ fn get_pipe(grid: &[Vec<char>]) -> HashSet<(usize, usize)> {
         }
     }
 
-    pipe
+    Pipe {
+        start_x,
+        start_y,
+        start,
+        pipe,
+    }
 }
 
 fn part1(input: &str) -> String {
@@ -112,30 +133,26 @@ fn part1(input: &str) -> String {
         .map(|line| line.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    (get_pipe(&grid).len() / 2).to_string()
+    (get_pipe(&grid).pipe.len() / 2).to_string()
 }
 
 fn part2(input: &str) -> String {
-    let grid = input
+    let mut grid = input
         .lines()
         .map(|line| line.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
     let pipe = get_pipe(&grid);
 
+    grid[pipe.start_y][pipe.start_x] = pipe.start;
+
     let mut count = 0;
     for (y, row) in grid.iter().enumerate() {
         let mut inside = false;
         for (x, &c) in row.iter().enumerate() {
-            if pipe.contains(&(x, y)) {
-                match c {
-                    'S' if x != row.len() - 1 && row[x + 1] != '-' => {
-                        inside = !inside;
-                    }
-                    '|' | '7' | 'F' => {
-                        inside = !inside;
-                    }
-                    _ => {}
+            if pipe.pipe.contains(&(x, y)) {
+                if let '|' | 'L' | 'J' = c {
+                    inside = !inside;
                 }
             } else if inside {
                 count += 1;
