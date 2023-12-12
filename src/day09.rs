@@ -13,11 +13,7 @@ pub fn solve() {
     println!("Day09 Part2: {}", part2(&input));
 }
 
-struct Dataset {
-    data: Vec<Vec<i64>>,
-}
-
-fn parse(input: &str) -> IResult<&str, Dataset> {
+fn parse(input: &str) -> IResult<&str, Vec<Vec<i64>>> {
     let (input, data) = separated_list1(
         newline,
         separated_list1(
@@ -28,14 +24,14 @@ fn parse(input: &str) -> IResult<&str, Dataset> {
             ),
         ),
     )(input)?;
-    Ok((input, Dataset { data }))
+    Ok((input, data))
 }
 
 fn part1(input: &str) -> String {
-    let (_, mut dataset) = parse(input).unwrap();
+    let (_, mut data) = parse(input).unwrap();
 
     let mut sum = 0;
-    for history in dataset.data.iter_mut() {
+    for history in data.iter_mut() {
         while !history.iter().all(|&i| i == 0) {
             for i in 0..(history.len() - 1) {
                 history[i] = history[i + 1] - history[i];
@@ -48,10 +44,10 @@ fn part1(input: &str) -> String {
 }
 
 fn part2(input: &str) -> String {
-    let (_, mut dataset) = parse(input).unwrap();
+    let (_, mut data) = parse(input).unwrap();
 
     let mut sum = 0;
-    for history in dataset.data.iter_mut() {
+    for history in data.iter_mut() {
         history.reverse();
 
         let mut sign = 1;
