@@ -30,11 +30,11 @@ fn parse_card(input: &str) -> IResult<&str, Card> {
     let (input, _) = digit1(input)?;
     let (input, _) = char(':')(input)?;
     let (input, _) = space1(input)?;
-    let (input, winning) = separated_list1(space1, map_res(digit1, str::parse::<i32>))(input)?;
+    let (input, winning) = separated_list1(space1, map_res(digit1, str::parse))(input)?;
     let (input, _) = space1(input)?;
     let (input, _) = char('|')(input)?;
     let (input, _) = space1(input)?;
-    let (input, having) = separated_list1(space1, map_res(digit1, str::parse::<i32>))(input)?;
+    let (input, having) = separated_list1(space1, map_res(digit1, str::parse))(input)?;
     Ok((input, Card { winning, having }))
 }
 

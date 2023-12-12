@@ -49,7 +49,7 @@ fn parse(input: &str) -> IResult<&str, Vec<Hand>> {
 fn parse_hand(input: &str) -> IResult<&str, Hand> {
     let (input, cards) = count(parse_card, 5)(input)?;
     let (input, _) = char(' ')(input)?;
-    let (input, bid) = map_res(digit1, str::parse::<usize>)(input)?;
+    let (input, bid) = map_res(digit1, str::parse)(input)?;
     Ok((input, Hand { cards, bid }))
 }
 

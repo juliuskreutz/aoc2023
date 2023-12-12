@@ -21,11 +21,11 @@ struct Race {
 fn parse_part1(input: &str) -> IResult<&str, Race> {
     let (input, _) = tag("Time:")(input)?;
     let (input, _) = space1(input)?;
-    let (input, times) = separated_list1(space1, map_res(digit1, str::parse::<usize>))(input)?;
+    let (input, times) = separated_list1(space1, map_res(digit1, str::parse))(input)?;
     let (input, _) = newline(input)?;
     let (input, _) = tag("Distance:")(input)?;
     let (input, _) = space1(input)?;
-    let (input, distances) = separated_list1(space1, map_res(digit1, str::parse::<usize>))(input)?;
+    let (input, distances) = separated_list1(space1, map_res(digit1, str::parse))(input)?;
     Ok((input, Race { times, distances }))
 }
 

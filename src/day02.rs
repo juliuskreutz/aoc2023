@@ -15,7 +15,7 @@ pub fn solve() {
 }
 
 struct Game {
-    id: i32,
+    id: usize,
     colors: Vec<Color>,
 }
 
@@ -33,14 +33,14 @@ fn parse(input: &str) -> IResult<&str, Vec<Game>> {
 
 fn parse_game(input: &str) -> IResult<&str, Game> {
     let (input, _) = tag("Game ")(input)?;
-    let (input, id) = map_res(digit1, str::parse::<i32>)(input)?;
+    let (input, id) = map_res(digit1, str::parse)(input)?;
     let (input, _) = tag(": ")(input)?;
     let (input, colors) = separated_list1(alt((tag(", "), tag("; "))), parse_color)(input)?;
     Ok((input, Game { id, colors }))
 }
 
 fn parse_color(input: &str) -> IResult<&str, Color> {
-    let (input, amount) = map_res(digit1, str::parse::<usize>)(input)?;
+    let (input, amount) = map_res(digit1, str::parse)(input)?;
     let (input, _) = space1(input)?;
     let (input, color) = alt((
         value(Color::Red(amount), tag("red")),
