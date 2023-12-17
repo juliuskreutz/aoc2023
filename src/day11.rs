@@ -1,5 +1,3 @@
-use std::usize;
-
 pub fn solve() {
     let input = std::fs::read_to_string("input/day11.txt").unwrap();
 
