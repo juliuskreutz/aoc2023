@@ -8,8 +8,8 @@ pub fn solve() {
 fn calculate(input: &str, extra_space: usize) -> usize {
     let grid = input
         .lines()
-        .map(|line| line.chars().collect::<Vec<char>>())
-        .collect::<Vec<Vec<char>>>();
+        .map(|line| line.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
 
     let mut galaxies = Vec::new();
     for (y, line) in grid.iter().enumerate() {
